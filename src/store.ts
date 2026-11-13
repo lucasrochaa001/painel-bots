@@ -3,6 +3,8 @@
 import { promises as fs } from "node:fs";
 import { createHash, randomUUID } from "node:crypto";
 import path from "node:path";
+import { BrandMark, type Brand } from "./brand.js";
+import { OrgChart, type OrgState } from "./orgchart.js";
 import type { Msg, Status } from "./validate.js";
 
 export interface BotState {
@@ -57,6 +59,10 @@ export interface State {
    * cada uma vale HANDOFF_TTL_MS. Só em memória: não vai para o arquivo.
    */
   handoffs: Handoff[];
+  /** Marca do painel (nome, subtítulo, monograma). null = emblema genérico. */
+  brand: Brand | null;
+  /** Hierarquia do organograma. null = o painel agrupa por andar. */
+  org: OrgState | null;
 }
 
 export function emptyState(): State {
@@ -70,6 +76,8 @@ export function emptyState(): State {
     feed: [],
     avatars: Object.create(null),
     handoffs: [],
+    brand: null,
+    org: null,
   };
 }
 
@@ -114,6 +122,8 @@ export class Store {
             floors: Array.isArray(parsed.floors) ? parsed.floors : null,
             avatars: Object.assign(Object.create(null), parsed.avatars ?? {}),
             handoffs: [],
+            brand: BrandMark.sane(parsed.brand),
+            org: OrgChart.sane(parsed.org),
           };
         } else throw new Error("formato");
       } catch (e: unknown) {
@@ -186,6 +196,12 @@ export class Store {
         this.pruneHandoffs(now);
         break;
       }
+      case "brand":
+        this.state.brand = { name: m.name, subtitle: m.subtitle, mark: m.mark };
+        break;
+      case "org":
+        this.state.org = !m.owner && m.nodes.length === 0 ? null : { owner: m.owner, nodes: m.nodes, cobra: m.cobra };
+        break;
     }
     this.state.updated_at = at;
   }

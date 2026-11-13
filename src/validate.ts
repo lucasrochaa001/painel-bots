@@ -15,6 +15,10 @@ const SHAPE_RE = /^[a-z][a-z0-9_-]{0,19}$/;
 /** Cores nomeadas do app Grok Bot (além de hex). */
 export const NAMED_COLORS = ["violet", "blue", "cyan", "green", "orange", "red", "black", "gray"] as const;
 export const MAX_FLOORS = 50;
+export const MAX_COBRA = 40;
+export const ROLE_MAX = 80;
+export const SUBTITLE_MAX = 80;
+export const MARK_MAX = 4;
 // eslint-disable-next-line no-control-regex
 const CONTROL_RE = /[\u0000-\u001f\u007f]/;
 
@@ -26,7 +30,14 @@ export type Msg =
   | { type: "groups"; bots: Record<string, string>; floors?: string[] }
   | { type: "chat"; bots: Record<string, string> }
   | { type: "usage"; total_used_pct: number; resets_at: string; bots: Record<string, number> }
-  | { type: "handoff"; from: string; to: string; task: string; task_truncated: boolean };
+  | { type: "handoff"; from: string; to: string; task: string; task_truncated: boolean }
+  | { type: "brand"; name: string; subtitle: string; mark: string }
+  | {
+      type: "org";
+      owner: { name: string; role: string } | null;
+      nodes: { bot: string; role: string; reports_to: string | null }[];
+      cobra: { from: string; label: string; to: string | null }[];
+    };
 
 export class ValidationError extends Error {}
 
@@ -179,7 +190,57 @@ export function parseMessage(raw: unknown): Msg {
       const { text: task, truncated } = shortText(raw.task, "task");
       return { type, from, to, task, task_truncated: truncated };
     }
+    case "brand": {
+      onlyKeys(raw, ["type", "name", "subtitle", "mark"], "brand");
+      const name = str(raw.name, "name", 1, NAME_MAX);
+      const subtitle = raw.subtitle === undefined ? "" : str(raw.subtitle, "subtitle", 0, SUBTITLE_MAX);
+      const mark = raw.mark === undefined || raw.mark === "" ? "" : str(raw.mark, "mark", 1, MARK_MAX).toLowerCase();
+      if (mark && !/^[a-z0-9]{1,4}$/.test(mark)) fail("mark: até 4 letras ou números");
+      return { type, name, subtitle, mark };
+    }
+    case "org": {
+      onlyKeys(raw, ["type", "owner", "nodes", "cobra"], "org");
+      let owner: { name: string; role: string } | null = null;
+      if (raw.owner !== undefined && raw.owner !== null) {
+        if (!isObj(raw.owner)) fail("owner: deve ser objeto {name, role}");
+        onlyKeys(raw.owner, ["name", "role"], "owner");
+        owner = {
+          name: str(raw.owner.name, "owner.name", 1, NAME_MAX),
+          role: raw.owner.role === undefined ? "" : str(raw.owner.role, "owner.role", 0, ROLE_MAX),
+        };
+      }
+      if (!Array.isArray(raw.nodes)) fail("nodes: deve ser lista");
+      if (raw.nodes.length > MAX_BOTS_PER_MSG) fail(`nodes: máximo de ${MAX_BOTS_PER_MSG}`);
+      const seen = new Set<string>();
+      const nodes = raw.nodes.map((it, i) => {
+        if (!isObj(it)) fail(`nodes[${i}]: deve ser objeto`);
+        onlyKeys(it, ["bot", "role", "reports_to"], `nodes[${i}]`);
+        const bot = botName(it.bot, `nodes[${i}].bot`);
+        if (seen.has(bot)) fail(`nodes[${i}].bot: repetido`);
+        seen.add(bot);
+        const role = it.role === undefined ? "" : str(it.role, `nodes[${i}].role`, 0, ROLE_MAX);
+        const reports_to =
+          it.reports_to === undefined || it.reports_to === null || it.reports_to === ""
+            ? null
+            : botName(it.reports_to, `nodes[${i}].reports_to`);
+        if (reports_to === bot) fail(`nodes[${i}].reports_to: não pode ser o próprio bot`);
+        return { bot, role, reports_to };
+      });
+      const cobraRaw = raw.cobra === undefined ? [] : raw.cobra;
+      if (!Array.isArray(cobraRaw)) fail("cobra: deve ser lista");
+      if (cobraRaw.length > MAX_COBRA) fail(`cobra: máximo de ${MAX_COBRA}`);
+      const cobra = cobraRaw.map((it, i) => {
+        if (!isObj(it)) fail(`cobra[${i}]: deve ser objeto`);
+        onlyKeys(it, ["from", "label", "to"], `cobra[${i}]`);
+        const from = botName(it.from, `cobra[${i}].from`);
+        const label = str(it.label, `cobra[${i}].label`, 1, ROLE_MAX);
+        const to = it.to === undefined || it.to === null || it.to === "" ? null : botName(it.to, `cobra[${i}].to`);
+        if (to === from) fail(`cobra[${i}].to: não pode ser o próprio bot`);
+        return { from, label, to };
+      });
+      return { type, owner, nodes, cobra };
+    }
     default:
-      fail("type: use status|routines|roster|looks|groups|chat|usage|handoff");
+      fail("type: use status|routines|roster|looks|groups|chat|usage|handoff|brand|org");
   }
 }

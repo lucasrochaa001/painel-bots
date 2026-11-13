@@ -240,31 +240,30 @@ test("GET /api/organograma exige login, não aceita POST e nunca devolve o token
 // ---- página ----
 const html = panelPage("n");
 
-test("aba ORGANOGRAMA: sem placeholder, busca só /api/organograma, com cartão no painel direito e fontes rotuladas", () => {
+test("aba ORGANOGRAMA: hierarquia do ingest org, fallback por andar, sem Notion na página", () => {
   assert.ok(!html.includes('id="breve"') && !html.includes("EM BREVE"));
   assert.ok(html.includes('<div class="org" id="org" hidden></div>'));
   assert.ok(html.includes("mostra('org',aba==='org')"));
-  assert.ok(html.includes("/api/organograma"));
-  for (const s of ["COO COBRA PRAZOS DE TODOS", "Apoio / outros andares", "Resumo do organograma", "No organograma", "Reporta a", "Cobra prazos de", "dados do Notion de", "snapshot de", "fora do Notion", "sem status"])
+  assert.ok(!html.includes("/api/organograma"), "a aba lê st.org, não o Notion");
+  for (const s of ["Sem hierarquia definida", "agrupado por andar", "quem reporta a quem", "No organograma", "Reporta a", "Cobra prazos de", "orgLayout(", "minmax(0,1fr)", "sem status"])
     assert.ok(html.includes(s), "faltou " + s);
-  assert.ok(!/notion\.com|secret_|ntn_/.test(html), "a página não fala com o Notion nem carrega token");
+  assert.ok(!/notion\.com|secret_|ntn_|GRUPO RRB|COO ANA/.test(html), "a página não fala com o Notion nem crava um cliente");
   assert.ok(html.includes("prefers-reduced-motion"));
 });
 
-test("correção A: selo NOVO é elemento em linha (flex:none) no fim do cargo, sem position:absolute", () => {
+test("cartão do organograma: cargo em linha e ponto de status", () => {
   const css = html.slice(html.indexOf("<style"), html.indexOf("</style>"));
-  const tg = /#org \.nd \.c \.tg\{([^}]*)\}/.exec(css);
-  assert.ok(tg, "regra do selo existe");
-  assert.match(tg![1]!, /flex:none/);
-  assert.doesNotMatch(tg![1]!, /position:\s*absolute/);
   assert.match(css, /#org \.nd \.c\{[^}]*display:flex[^}]*gap:6px/);
   assert.match(css, /#org \.nd \.c \.ct\{[^}]*text-overflow:ellipsis/);
-  assert.ok(html.includes("orgNovo("), "regra dos 14 dias roda no cliente");
+  assert.match(css, /#org \.nd \.sd\{/);
+  assert.ok(html.includes("function orgCard("));
+  assert.doesNotMatch(css, /#org \.nd \.c \.ct\{[^}]*position:\s*absolute/);
 });
 
-test("organograma: colunas de diretores não crescem pelo texto (minmax(0,…)) e as outras abas seguem intactas", () => {
+test("organograma: colunas não crescem pelo texto (minmax(0,…)) e as outras abas seguem intactas", () => {
   const css = html.slice(html.indexOf("<style"), html.indexOf("</style>"));
-  assert.match(css, /#org \.r2\{[^}]*grid-template-columns:minmax\(0,1\.22fr\) minmax\(0,1\.06fr\) minmax\(0,1\.16fr\) minmax\(0,\.82fr\) minmax\(0,\.82fr\)/);
+  assert.match(css, /#org \.r2\{[^}]*minmax\(0,1fr\)/);
+  assert.ok(html.includes("minmax(0,1fr)"));
   for (const s of ['data-aba="mapa"', 'data-aba="lista"', "mostra('lista',aba==='lista')"]) assert.ok(html.includes(s), "faltou " + s);
 });
 

@@ -17,13 +17,13 @@ pronto para o Railway. Recebe atualizações em `POST /ingest` e mostra o painel
 - `POST /ingest`: só `Authorization: Bearer <PAINEL_TOKEN>` (cookie não vale), `Content-Type: application/json`, corpo até 64 KB. Retorna 401 sem chave, 400 com o erro do campo, 413 se for grande demais.
 - `GET /`: tela de login (nenhum dado) ou o painel. O login grava um cookie `HttpOnly; Secure; SameSite=Strict` com um HMAC da chave, nunca a chave. Também aceita Bearer.
 - `GET /api/state`: estado em JSON, protegido. O painel atualiza a cada 10 s e só redesenha quando algo mudou.
-- `GET /api/organograma`: hierarquia do Notion (database Agentes, campo "Reporta a"), protegida como `/api/state`. O servidor consulta o Notion no máximo a cada 10 min (memória + `DATA_DIR/organograma-cache.json`). Se o Notion falhar, serve o último cache (`fonte: "cache"`, rótulo "dados do Notion de HH:MM (cache)"); sem cache e sem token, serve `src/organograma-fallback.json` (`fonte: "snapshot"`, "snapshot de 11/11"). Nunca derruba o painel.
+- `GET /api/organograma`: hierarquia do Notion (database Agentes, campo "Reporta a"), protegida como `/api/state`. O servidor consulta o Notion no máximo a cada 10 min (memória + `DATA_DIR/organograma-cache.json`). Se o Notion falhar, serve o último cache (`fonte: "cache"`); sem cache e sem token, serve `src/organograma-fallback.json` (`fonte: "snapshot"`). A rota continua disponível. A aba ORGANOGRAMA do painel não lê essa rota: ela usa o ingest `org` (abaixo) e, sem ele, agrupa os bots por andar.
 - `POST /avatar?bot=<nome>` (ou header `X-Bot: <nome em encodeURIComponent>`): foto do boneco. Só Bearer, `Content-Type: image/png`, até 512 KB (reduza para ~256 px antes). 401/415/400/413 nos erros. Gravada em `DATA_DIR/avatars/<sha256 do nome>.png`.
 - `GET /avatar/<nome>`: a foto, protegida por cookie ou Bearer (sem login → 401). Nada é público.
 - `GET /fonts/<orbitron|inter|jetbrains-mono>.woff2`: fontes do visual ANA servidas pelo próprio serviço (a CSP continua sem origem externa: só `font-src 'self'`). Público, sem dado nenhum; qualquer outro nome → 404. Arquivos em `assets/fonts/` (licença OFL).
 - `GET /health`: público, retorna só `{"ok":true}`.
 
-O painel (visual ANA, tema escuro) tem as abas MAPA (escritório isométrico: quem trabalha, espera ou está com erro senta numa mesa; quem descansa fica na copa), LISTA (todos os bots) e ORGANOGRAMA (quem reporta a quem, com o mesmo boneco e a mesma cor de status do mapa; clicar num bot seleciona e mostra "No organograma" na coluna da direita), a faixa vermelha de erro, "Precisa de você" e "Parado há +12h". Uma passagem de bastão (`handoff`) vira uma linha animada por ~8 s (via elevador quando muda de andar).
+O painel (tema escuro e dourado) tem as abas MAPA (escritório isométrico: quem trabalha, espera ou está com erro senta numa mesa; quem descansa fica na copa), LISTA (todos os bots, quem espera por você primeiro) e ORGANOGRAMA (quem reporta a quem, com o mesmo boneco e a mesma cor de status do mapa; clicar num bot seleciona e mostra "No organograma" na coluna da direita). A marca do topo (emblema, nome, subtítulo) vem do ingest `brand`; sem ela o painel mostra "Painel / Status dos bots". O organograma vem do ingest `org`; sem hierarquia, a aba agrupa por andar e avisa. A coluna da esquerda traz "Precisa de você", "Com erro", "Parado há +12h", "Andares" e "Atividade". Uma passagem de bastão (`handoff`) vira uma linha animada por ~8 s (via elevador quando muda de andar).
 
 O painel separa os bots por time ("andares"). Quem não tem time fica em "Sem time". Sem `floors`, os andares vão em ordem alfabética; com `floors`, seguem a lista, os times fora dela vêm depois e "Sem time" fica por último.
 Cada bot guarda os últimos 10 passos (`recent`) e o estado guarda um feed global dos últimos 50 (`feed`), mostrados em "Passos recentes" e "Atividade". Um status igual ao anterior só atualiza o horário. Horários aparecem em America/Recife.
@@ -72,6 +72,15 @@ curl -sS "${H[@]}" -X POST "$URL/ingest" -d '{"type":"chat","bots":{"Donna":"gro
 
 # usage: percentuais de 0 a 100, resets_at em ISO 8601
 curl -sS "${H[@]}" -X POST "$URL/ingest" -d '{"type":"usage","total_used_pct":42.5,"resets_at":"2026-11-09T00:00:00-03:00","bots":{"Donna":10,"Grok Bot":30}}'
+
+# brand: emblema, nome e subtítulo do topo. Sem este ingest o painel fica genérico ("Painel").
+# mark é o monograma do emblema (1 a 4 letras ou números); se omitir, o painel usa as iniciais do nome.
+curl -sS "${H[@]}" -X POST "$URL/ingest" -d '{"type":"brand","name":"Atlas Consultoria","subtitle":"Gestão","mark":"atl"}'
+
+# org: hierarquia da aba ORGANOGRAMA. reports_to é o bot (ou o nome do owner) a quem reporta.
+# cobra desenha uma linha tracejada; sem "to", o rótulo vale para o conjunto ("cobra prazos de todos").
+# nodes vazio e sem owner apaga a hierarquia e a aba volta a agrupar por andar.
+curl -sS "${H[@]}" -X POST "$URL/ingest" -d '{"type":"org","owner":{"name":"Dono","role":"humano · decide"},"nodes":[{"bot":"CEO","role":"geral","reports_to":"Dono"},{"bot":"Jurídico","role":"diretoria","reports_to":"CEO"}],"cobra":[{"from":"Jurídico","label":"cobra prazos de todos"}]}'
 
 # handoff: um bot passa uma tarefa para outro. No painel, quem passa levanta, leva o papel até a mesa
 # do outro e volta (se o outro estiver em outro andar, sai/entra pelo elevador). from ≠ to; task até 80

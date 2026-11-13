@@ -52,9 +52,10 @@ test("copa: lugar estável, quem chega pega o menor livre e passando do total vi
 
 const html = panelPage("nonce-ana");
 
-test("topbar: logo, título, Ao vivo, pílulas, abas MAPA | LISTA | ORGANOGRAMA e Sair", () => {
-  for (const s of ["A NOVA<b>ADVOCACIA</b>", "PAINEL DOS BOTS", 'id="vivotxt"', 'id="contas"', 'data-aba="mapa">MAPA', 'data-aba="lista">LISTA', 'data-aba="org">ORGANOGRAMA', 'action="/logout"'])
+test("topbar: emblema genérico, título, Ao vivo, pílulas, abas MAPA | LISTA | ORGANOGRAMA e Sair", () => {
+  for (const s of ['id="emblema">pb', 'id="marca-nome">Painel', 'id="marca-sub">Status dos bots', "PAINEL DOS BOTS", 'id="vivotxt"', 'id="contas"', 'data-aba="mapa">MAPA', 'data-aba="lista">LISTA', 'data-aba="org">ORGANOGRAMA', 'action="/logout"', "brandResolve("])
     assert.ok(html.includes(s), "faltou " + s);
+  assert.ok(!html.includes("GRUPO RRB") && !html.includes("A NOVA"), "a marca não vem cravada no HTML");
 });
 
 test("faixa de erro: só quando há bot em erro, com o motivo e botão que abre o chat", () => {
@@ -78,10 +79,10 @@ test("coluna direita e aba LISTA existem; LISTA usa os mesmos dados do estado", 
   assert.ok(html.includes("linkChat(botSel,'cta','Abrir chat')"));
 });
 
-test("paleta ANA: Deep Space, cyan, purple, gold, neural white, erro #FF3B6B; sem fundo claro", () => {
+test("paleta: fundo escuro, dourado, verde de quem trabalha, erro; sem fundo claro", () => {
   const css = html.slice(html.indexOf("<style"), html.indexOf("</style>"));
-  for (const c of ["#050811", "#00F0FF", "#6366F1", "#D4AF37", "#FAFBFF", "#FF3B6B"]) assert.ok(css.includes(c), "faltou " + c);
-  assert.match(css, /--bg:#050811/);
+  for (const c of ["#0c0b09", "#d4af37", "#f6f1e6", "#e85d4c", "#3dcc7a"]) assert.ok(css.includes(c), "faltou " + c);
+  assert.match(css, /--bg:#0c0b09/);
   assert.doesNotMatch(css, /background:\s*(?:#fff\b|#ffffff\b|#e9ecf1|white)/i, "fundo claro");
   for (const f of ["Orbitron", "Inter", "JetBrains Mono"]) assert.ok(css.includes(f), "faltou fonte " + f);
 });
@@ -96,9 +97,9 @@ test("mapa: mesa com cadeira, copa para quem descansa e rótulo fixo só de trab
     assert.ok(html.includes(s), "faltou " + s);
 });
 
-test("login também no visual ANA e sem fundo claro", () => {
+test("login também no tema escuro e sem fundo claro", () => {
   const l = loginPage("n", "chave errada");
-  assert.ok(l.includes("chave errada") && l.includes('class="login glass"') && l.includes("#050811"));
+  assert.ok(l.includes("chave errada") && l.includes('class="login glass"') && l.includes("#0c0b09"));
 });
 
 let server: http.Server;
