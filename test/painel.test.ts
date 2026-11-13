@@ -52,6 +52,12 @@ test("copa: lugar estável, quem chega pega o menor livre e passando do total vi
 
 const html = panelPage("nonce-ana");
 
+test("abas não encolhem: MAPA, LISTA e ORGANOGRAMA ficam inteiras", () => {
+  const css = html.slice(html.indexOf("<style"), html.indexOf("</style>"));
+  assert.match(css, /\.abas\{[^}]*flex:none[^}]*min-width:max-content/);
+  assert.match(css, /\.abas button\{[^}]*white-space:nowrap/);
+});
+
 test("topbar: emblema genérico, título, Ao vivo, pílulas, abas MAPA | LISTA | ORGANOGRAMA e Sair", () => {
   for (const s of ['id="emblema">pb', 'id="marca-nome">Painel', 'id="marca-sub">Status dos bots', "PAINEL DOS BOTS", 'id="vivotxt"', 'id="contas"', 'data-aba="mapa">MAPA', 'data-aba="lista">LISTA', 'data-aba="org">ORGANOGRAMA', 'action="/logout"', "brandResolve("])
     assert.ok(html.includes(s), "faltou " + s);

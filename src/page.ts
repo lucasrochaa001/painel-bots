@@ -32,7 +32,8 @@ a{color:inherit;text-decoration:none}button,.btn{font:inherit;cursor:pointer;bor
 .h .n.c{background:rgba(212,175,55,.12);color:var(--cy);border-color:rgba(212,175,55,.4)}
 .mu,.vazio{color:var(--mu)}.vazio{font-size:13px}
 /* topbar */
-#topo{display:flex;align-items:center;padding:0 18px;gap:18px;height:62px;position:relative}
+#topo{display:flex;align-items:center;flex-wrap:nowrap;padding:0 14px;gap:12px;min-height:62px;height:62px;position:relative;min-width:0}
+#topo .marca,#topo .titulo,.vivo,#topo form{flex:none}
 #topo .marca{display:flex;align-items:center;gap:12px}
 #topo .wm{display:flex;flex-direction:column;gap:1px;line-height:1.15;white-space:nowrap}
 #topo .wm b{display:block;font-family:Orbitron,sans-serif;font-weight:800;font-size:13px;letter-spacing:.12em;color:#f6f1e6;text-transform:uppercase}
@@ -44,8 +45,8 @@ a{color:inherit;text-decoration:none}button,.btn{font:inherit;cursor:pointer;bor
 .vivo.off .dot{background:var(--rd);box-shadow:0 0 0 4px rgba(232,93,76,.18),0 0 14px var(--rd);animation:none}
 .vivo #hora{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--wh);font-size:16px;margin-left:4px}
 @keyframes pulsa{50%{box-shadow:0 0 0 8px rgba(212,175,55,0),0 0 14px var(--cy)}}
-.contas{display:flex;gap:10px;margin:0 auto}
-.contas span{display:flex;align-items:center;gap:8px;height:36px;padding:0 15px;border-radius:999px;border:1px solid rgba(107,124,158,.5);font-size:14px;font-weight:500;background:rgba(14,12,9,.5);color:var(--mu);white-space:nowrap}
+.contas{display:flex;flex:1 1 auto;min-width:0;gap:8px;margin:0 auto;justify-content:center}
+.contas span{display:flex;align-items:center;gap:6px;height:34px;padding:0 10px;border-radius:999px;border:1px solid rgba(107,124,158,.5);font-size:13px;font-weight:500;background:rgba(14,12,9,.5);color:var(--mu);white-space:nowrap;flex:none}
 .contas b{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:800;color:inherit}
 .contas .dot{width:9px;height:9px;border-radius:50%;display:block}
 .contas .on-working{color:#3dcc7a;border-color:rgba(61,204,122,.6);box-shadow:0 0 16px rgba(61,204,122,.2)}
@@ -53,10 +54,10 @@ a{color:inherit;text-decoration:none}button,.btn{font:inherit;cursor:pointer;bor
 .contas .on-error{color:var(--rd);border-color:rgba(232,93,76,.7);box-shadow:0 0 16px rgba(232,93,76,.25)}
 .contas .on-working .dot,.contas .on-waiting_user .dot,.contas .on-error .dot{box-shadow:0 0 8px currentColor}
 @keyframes pulsaAmb{0%{box-shadow:0 0 0 0 rgba(212,175,55,.5)}70%{box-shadow:0 0 0 9px rgba(212,175,55,0)}100%{box-shadow:0 0 0 0 rgba(212,175,55,0)}}
-.abas{display:flex;border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:rgba(14,12,9,.5)}
-.abas button{font-family:Orbitron,sans-serif;font-weight:600;font-size:12.5px;letter-spacing:.14em;padding:11px 18px;color:var(--mu)}
+.abas{display:flex;flex:none;min-width:max-content;border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:rgba(14,12,9,.5)}
+.abas button{flex:none;white-space:nowrap;font-family:Orbitron,sans-serif;font-weight:600;font-size:12px;letter-spacing:.08em;padding:10px 12px;color:var(--mu)}
 .abas button:hover{color:var(--wh)}.abas button.on{background:rgba(212,175,55,.16);color:var(--cy);box-shadow:inset 0 -2px 0 var(--cy);font-weight:800}
-.sair{border:1px solid rgba(212,175,55,.45);color:var(--wh);background:rgba(212,175,55,.07);border-radius:9px;padding:9px 18px;font-size:14px;font-weight:600}.sair:hover{background:rgba(212,175,55,.16)}
+.sair{border:1px solid rgba(212,175,55,.45);color:var(--wh);background:rgba(212,175,55,.07);border-radius:9px;padding:9px 14px;font-size:14px;font-weight:600;white-space:nowrap}.sair:hover{background:rgba(212,175,55,.16)}
 /* faixa de erro */
 #errs{display:flex;flex-direction:column;gap:8px}
 .err{display:flex;align-items:center;gap:14px;min-height:50px;padding:6px 14px 6px 18px;border-radius:12px;background:linear-gradient(90deg,rgba(232,93,76,.20),rgba(232,93,76,.08));border:1px solid rgba(232,93,76,.65);box-shadow:0 0 28px rgba(232,93,76,.2);backdrop-filter:blur(12px)}
@@ -260,8 +261,9 @@ a{color:inherit;text-decoration:none}button,.btn{font:inherit;cursor:pointer;bor
 .passante{pointer-events:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media (prefers-reduced-motion:reduce){.bot-g:hover .hov{transform:none}}
-@media (max-width:1500px){#topo{gap:12px;padding:0 12px}#topo .wm{display:none}#topo .titulo{font-size:17px}.contas{gap:6px}.contas span{padding:0 10px;font-size:13px}.abas button{padding:10px 12px}}
-@media (max-width:1250px){#topo .vsep,#topo .vivo>span:not(.dot):not(#hora){display:none}.contas span{font-size:12px;padding:0 8px;gap:5px}.abas button{letter-spacing:.06em;padding:10px 9px;font-size:11.5px}}
+@media (max-width:1500px){#topo{gap:10px;padding:0 12px}#topo .wm{display:none}#topo .titulo{font-size:15px;letter-spacing:.1em}.contas{gap:6px}.contas span{padding:0 8px;font-size:12px}}
+@media (max-width:1400px){#topo{flex-wrap:wrap;height:auto;row-gap:8px;padding:8px 12px 10px}.contas{flex:1 0 100%;order:8;margin:0;justify-content:flex-start}.abas{margin-left:auto}}
+@media (max-width:1250px){#topo .vsep,#topo .vivo>span:not(.dot):not(#hora){display:none}.contas span{font-size:12px;padding:0 8px;gap:5px}}
 @media (max-height:860px){.it{padding:6px 0}.ro{padding:8px 0}.act{padding:7px 0}.card{padding:11px 14px}.mt b{font-size:20px}.mt div{padding:6px 10px}}
 .login-wrap{position:relative;z-index:1;min-height:100%;display:grid;place-items:center;padding:20px}
 .login{width:100%;max-width:380px;padding:26px}
