@@ -67,7 +67,7 @@ a{color:inherit;text-decoration:none}button,.btn{font:inherit;cursor:pointer;bor
 .err .go{margin-left:auto;flex:none;background:var(--rd);color:#0c0b09;font-weight:800;border-radius:9px;padding:8px 22px;font-size:14px;box-shadow:0 0 18px rgba(232,93,76,.5)}
 .err .go:hover{filter:brightness(1.12)}
 /* colunas */
-#cols{flex:1 1 0;display:grid;grid-template-columns:minmax(280px,24vw) minmax(0,1fr) minmax(300px,26vw);gap:12px;min-height:0}
+#cols{flex:1 1 0;display:grid;grid-template-columns:minmax(248px,19vw) minmax(0,1fr) minmax(228px,18vw);gap:12px;min-height:0}
 #esq,#dir{display:flex;flex-direction:column;gap:12px;min-height:0;min-width:0;overflow:auto}
 .rol{overflow:auto;scrollbar-width:thin;scrollbar-color:rgba(212,175,55,.35) transparent}
 .noshrink{flex:none}.precisa{flex:0 1 auto;min-height:230px;overflow:auto;scrollbar-width:thin;scrollbar-color:rgba(212,175,55,.35) transparent}
@@ -76,7 +76,7 @@ a{color:inherit;text-decoration:none}button,.btn{font:inherit;cursor:pointer;bor
 #topo,#errs{flex:none}
 .it{display:flex;align-items:flex-start;gap:11px;padding:9px 0;border-top:1px solid rgba(212,175,55,.13);cursor:pointer}.it:first-child{border-top:0;padding-top:2px}
 .av{width:30px;height:30px;flex:none;overflow:visible}.mini{width:26px;height:26px;flex:none;overflow:visible}
-.it .tx{min-width:0;flex:1}.it .nm{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.it .tx{min-width:0;flex:1}.it .nm{font-weight:700;font-size:15px;white-space:normal;overflow:visible;line-height:1.25}
 .it .ac{font-size:13px;color:var(--mu);margin-top:2px;white-space:normal;overflow:visible;line-height:1.35}
 .bt{flex:none;font-size:13px;font-weight:600;color:var(--cy);border:1px solid rgba(212,175,55,.5);background:rgba(212,175,55,.08);border-radius:8px;padding:6px 11px;white-space:nowrap}.bt:hover{background:rgba(212,175,55,.2)}
 .card.alerta{border-color:rgba(212,175,55,.55);box-shadow:0 0 0 1px rgba(212,175,55,.08) inset,0 0 26px rgba(212,175,55,.14),0 10px 40px rgba(0,0,0,.45)}
@@ -116,12 +116,19 @@ a{color:inherit;text-decoration:none}button,.btn{font:inherit;cursor:pointer;bor
 #leg span{display:flex;align-items:center;gap:7px}#leg i{width:10px;height:10px;border-radius:50%;display:block}
 #cena text{font-family:Inter,system-ui,sans-serif}
 .lista-wrap{position:absolute;inset:0;padding:18px 18px 14px;display:flex;flex-direction:column;min-height:0}
-.tabela{width:100%;border-collapse:collapse;font-size:14px}
-.tabela th{font-family:Orbitron,sans-serif;font-weight:700;font-size:12px;letter-spacing:.12em;color:var(--cy);text-align:left;padding:8px 10px;border-bottom:1px solid rgba(212,175,55,.3);position:sticky;top:0;background:#14120e;z-index:1;text-transform:uppercase}
-.tabela td{padding:7px 10px;border-bottom:1px solid rgba(212,175,55,.09);white-space:nowrap;vertical-align:middle}
+.tabela{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+.tabela th{font-family:Orbitron,sans-serif;font-weight:700;font-size:11px;letter-spacing:.08em;color:var(--cy);text-align:left;padding:8px 8px;border-bottom:1px solid rgba(212,175,55,.3);position:sticky;top:0;background:#14120e;z-index:1;text-transform:uppercase}
+.tabela td{padding:7px 8px;border-bottom:1px solid rgba(212,175,55,.09);white-space:nowrap;vertical-align:middle;overflow:hidden}
 .tabela tr.lin{cursor:pointer}.tabela tr.lin:hover td{background:rgba(212,175,55,.06)}.tabela tr.lin.sel td{background:rgba(212,175,55,.12)}
-.tabela td.nome{font-weight:700}.tabela td.nome div{display:flex;align-items:center;gap:10px}
-.tabela td.passo{color:var(--mu);width:100%;max-width:0;overflow:hidden;text-overflow:ellipsis}
+.tabela td.nome{font-weight:700}.tabela td.nome div{display:flex;align-items:center;gap:8px;min-width:0}.tabela td.nome div span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.tabela th:nth-child(1),.tabela td:nth-child(1){width:18%}
+.tabela th:nth-child(2),.tabela td:nth-child(2){width:13%}
+.tabela th:nth-child(3),.tabela td:nth-child(3){width:22%}
+.tabela th:nth-child(4),.tabela td:nth-child(4){width:12%}
+.tabela th:nth-child(6),.tabela td:nth-child(6){width:108px}
+.tabela td.passo{color:var(--mu);overflow:hidden;text-overflow:ellipsis}
+.tabela .sp{max-width:100%;overflow:hidden}
+.tabela .bt{padding:5px 8px;font-size:12px}
 .tabela td.num{font-family:'JetBrains Mono',monospace;color:var(--mu)}
 .sp{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;border:1px solid rgba(107,124,158,.55);border-radius:999px;padding:2px 11px;background:rgba(14,12,9,.5);color:var(--mu)}
 .sp i{width:8px;height:8px;border-radius:50%;background:var(--rest);display:block}
@@ -142,7 +149,7 @@ a{color:inherit;text-decoration:none}button,.btn{font:inherit;cursor:pointer;bor
 #org .tree{flex:none}
 #org .r0,#org .r1{display:flex;justify-content:center}
 #org .r1{margin-top:24px}
-#org .r2{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px 10px;margin-top:16px;align-items:start}
+#org .r2{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:10px 8px;margin-top:16px;align-items:start;width:100%}
 #org .col{min-width:0;display:flex;flex-direction:column;gap:6px}
 #org .tm{margin:0;display:flex;flex-direction:column;gap:4px}
 #org .sub2{margin:0 0 0 16px;display:flex;flex-direction:column;gap:4px}
@@ -936,7 +943,7 @@ function orgDesenha(){var box=$('org');if(!box)return;
  if(orgLay.ceo){var rc=el('div',orgLay.owner?'r1':'r0');rc.appendChild(orgCard(orgLay.ceo.nome,orgLay.ceo.role,false,'ceo'));tree.appendChild(rc);}
  var cobras=(orgLay.cobra||[]).filter(function(c){return !c.to;});
  if(cobras.length){var faixa=el('div','cobra-faixa');cobras.forEach(function(c,i){if(i)faixa.appendChild(document.createTextNode(' · '));faixa.appendChild(document.createTextNode(c.from+' '+c.label));});tree.appendChild(faixa);}
- if(orgLay.colunas.length){var r2=el('div','r2');
+ if(orgLay.colunas.length){var r2=el('div','r2');r2.style.gridTemplateColumns='repeat('+orgLay.colunas.length+',minmax(0,1fr))';
   orgLay.colunas.forEach(function(col){var cell=el('div','col');cell.appendChild(orgCard(col.head.nome,col.head.role,false,'dir'));
    var tm=el('div','tm');col.stack.forEach(function(s){tm.appendChild(orgCard(s.nome,s.role,false));});cell.appendChild(tm);r2.appendChild(cell);});
   tree.appendChild(r2);}

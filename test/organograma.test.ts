@@ -263,8 +263,8 @@ test("cartão do organograma: cargo em linha e ponto de status", () => {
 
 test("organograma: colunas não crescem pelo texto (minmax(0,…)) e as outras abas seguem intactas", () => {
   const css = html.slice(html.indexOf("<style"), html.indexOf("</style>"));
-  assert.match(css, /#org \.r2\{[^}]*minmax\(158px,1fr\)/);
-  assert.ok(html.includes("minmax(158px,1fr)"));
+  assert.match(css, /#org \.r2\{[^}]*minmax\(0,1fr\)/);
+  assert.ok(html.includes("minmax(0,1fr)"));
   for (const s of ['data-aba="mapa"', 'data-aba="lista"', "mostra('lista',aba==='lista')"]) assert.ok(html.includes(s), "faltou " + s);
 });
 
