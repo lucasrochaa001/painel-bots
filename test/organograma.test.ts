@@ -254,7 +254,8 @@ test("aba ORGANOGRAMA: hierarquia do ingest org, fallback por andar, sem Notion 
 test("cartão do organograma: cargo em linha e ponto de status", () => {
   const css = html.slice(html.indexOf("<style"), html.indexOf("</style>"));
   assert.match(css, /#org \.nd \.c\{[^}]*display:flex[^}]*gap:6px/);
-  assert.match(css, /#org \.nd \.c \.ct\{[^}]*text-overflow:ellipsis/);
+  assert.match(css, /#org \.nd \.c \.ct\{[^}]*white-space:normal/);
+  assert.match(css, /#org \.nd \.n\{[^}]*white-space:normal/);
   assert.match(css, /#org \.nd \.sd\{/);
   assert.ok(html.includes("function orgCard("));
   assert.doesNotMatch(css, /#org \.nd \.c \.ct\{[^}]*position:\s*absolute/);
@@ -262,8 +263,8 @@ test("cartão do organograma: cargo em linha e ponto de status", () => {
 
 test("organograma: colunas não crescem pelo texto (minmax(0,…)) e as outras abas seguem intactas", () => {
   const css = html.slice(html.indexOf("<style"), html.indexOf("</style>"));
-  assert.match(css, /#org \.r2\{[^}]*minmax\(0,1fr\)/);
-  assert.ok(html.includes("minmax(0,1fr)"));
+  assert.match(css, /#org \.r2\{[^}]*minmax\(158px,1fr\)/);
+  assert.ok(html.includes("minmax(158px,1fr)"));
   for (const s of ['data-aba="mapa"', 'data-aba="lista"', "mostra('lista',aba==='lista')"]) assert.ok(html.includes(s), "faltou " + s);
 });
 
